@@ -196,7 +196,7 @@ function loop(){
     //Calculating the current time
     let currentTime = (Math.round((Date.now() - startTime)/1000)).toString();
     //updating the text with the score
-    scoreCount.textContent=`You caught ${ballNum-alive} balls - ${alive} left!\nCurrent time: ${currentTime} seconds.`;
+    scoreCount.textContent=`You caught ${ballNum-alive} ${(ballNum-alive)===1 ? "ball" : "balls"} - ${alive} left!\nCurrent time: ${currentTime} seconds.`;
     //updating the evil circle
     evil.draw();
     evil.checkBounds();
