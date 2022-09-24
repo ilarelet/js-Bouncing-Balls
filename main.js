@@ -20,6 +20,7 @@ function randomRGB() {
   return `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`;
 }
 
+// creating a class for moving objects (ball and the evil circle)
 class Shape{
     constructor(x, y, velX, velY){
         this.x = x;
@@ -29,7 +30,7 @@ class Shape{
     }
 }
 
-
+// creating a subclass for balls. They have a random color and a boolean showing if it's alive or not
 class Ball extends Shape{
     constructor(x, y, velX, velY, size, color,exists){
         super(x, y, velX, velY);
@@ -38,6 +39,7 @@ class Ball extends Shape{
         this.exists = true
     }
 
+    // a method to create a ball
     draw(){
         ctx.beginPath();
         ctx.fillStyle = this.color;
@@ -45,7 +47,9 @@ class Ball extends Shape{
         ctx.fill();
     }
 
+    // a method to move a ball
     update(){
+        // if the ball hits a wall it changes the direction
         if ((this.x+this.size>=width)||(this.x-this.size<=0)){
             this.velX = - (this.velX);
         };
@@ -58,8 +62,11 @@ class Ball extends Shape{
         this.y += this.velY;
     }
 
+    //method checking if two balls collide and describing what to do
     collisionDetect(){
         for (const checkBall of balls){
+        //we iterate through the list of all the balls
+        //for each ball we see if it 'touches' the inspected one
             if ((this != checkBall)&&checkBall.exists){
                 const dx = Math.abs(this.x-checkBall.x);
                 const dy = Math.abs(this.y-checkBall.y);
@@ -67,7 +74,9 @@ class Ball extends Shape{
                 const dist = Math.sqrt(dx**2 + dy**2);
 
                 if (dist<(this.size+checkBall.size)){
-                  this.color=checkBall.color=randomRGB();
+                    // if they do touch - we change the color of both
+                    this.color=checkBall.color=randomRGB();
+                    //     ADD MOMENTUM EQUATION
                 }
             }
         }
@@ -75,6 +84,7 @@ class Ball extends Shape{
 
 }
 
+// creating a subclass for an evil circle
 class evilCircle extends Shape{
     constructor(x,y){
         super(x,y, 30, 30);
@@ -99,6 +109,7 @@ class evilCircle extends Shape{
         });
     }
 
+    // a method to create the circle
     draw(){
         ctx.beginPath();
         ctx.lineWidth=4;
@@ -107,6 +118,7 @@ class evilCircle extends Shape{
         ctx.stroke();
     }
 
+    //a method to make the ball bounce back from the edges of the screen
     checkBounds(){
         if (this.x+this.size>=width){
             this.x-=this.size;
@@ -125,7 +137,9 @@ class evilCircle extends Shape{
         };
     }
 
+
     collisionDetect(){
+        //  if the circle touches the ball - the ball ceises to exist
         for (const checkBall of balls){
             if (checkBall.exists) {
                 const dx = Math.abs(this.x-checkBall.x);
@@ -142,8 +156,9 @@ class evilCircle extends Shape{
     }   
 }
 
-const ballNum = 20;
+const ballNum = 20; // <<<<<<< EDITABLE number of balls
 
+//creating all the balls
 const balls = [];
 while (balls.length < ballNum){
     const size = random (10,20);
@@ -160,15 +175,17 @@ while (balls.length < ballNum){
 
 const evil = new evilCircle(random(0,50), random(0,50));
 
+//creating the timer (aka Loser Score)
 let timer = 0;
 
+//the looping function that gets the game going
 function loop(){
-
+    // every loop we recalculate how many balls are alive
     let alive = 0
-
+    // repainting the canvas with 25% transparancy to make the traces of the balls visible
     ctx.fillStyle='rgba(0,0,0,0.25)';
     ctx.fillRect(0,0,width,height);
-    
+    //iterationg through the balls uodating the location of every alive one and counting them
     for (const ball of balls){
         if (ball.exists){
             ball.update();
@@ -177,20 +194,20 @@ function loop(){
             alive++;
         }
     };
-
-   scoreCount.textContent=`You caught ${ballNum-alive} balls - ${alive} left!\nYour loser score is ${Math.floor(timer/10)}`;
-
+    //updating the text with the score
+    scoreCount.textContent=`You caught ${ballNum-alive} balls - ${alive} left!\nYour loser score is ${Math.floor(timer/10)}`;
+    //updating the evil circle
     evil.draw();
     evil.checkBounds();
     evil.collisionDetect();
-
-    requestAnimationFrame(loop);
-    timer += 1;
-
+    requestAnimationFrame(loop); //get the loop going
+    timer += 1; // timer needs to be redesigned
     if (alive === 0){
-        alert(`Congrats! Your loser score is ${Math.floor(timer/10)}`);
+        //Victory message
+        alert(`Congrats! Your loser score is ${Math.floor(timer/10)}\n\nWanna start a new game?`);
+        //reload the page to prevent being stuck on the victory message
+        location.reload()
     }
-
 }
 
 loop();
