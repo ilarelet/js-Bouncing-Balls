@@ -175,9 +175,8 @@ while (balls.length < ballNum){
 
 const evil = new evilCircle(random(0,50), random(0,50));
 
-//creating the timer (aka Loser Score)
-let timer = 0;
-
+//creating the timer
+let startTime =  Date.now();
 //the looping function that gets the game going
 function loop(){
     // every loop we recalculate how many balls are alive
@@ -194,17 +193,18 @@ function loop(){
             alive++;
         }
     };
+    //Calculating the current time
+    let currentTime = (Math.round((Date.now() - startTime)/1000)).toString();
     //updating the text with the score
-    scoreCount.textContent=`You caught ${ballNum-alive} balls - ${alive} left!\nYour loser score is ${Math.floor(timer/10)}`;
+    scoreCount.textContent=`You caught ${ballNum-alive} balls - ${alive} left!\nCurrent time: ${currentTime} seconds.`;
     //updating the evil circle
     evil.draw();
     evil.checkBounds();
     evil.collisionDetect();
     requestAnimationFrame(loop); //get the loop going
-    timer += 1; // timer needs to be redesigned
     if (alive === 0){
         //Victory message
-        alert(`Congrats! Your loser score is ${Math.floor(timer/10)}\n\nWanna start a new game?`);
+        alert(`Congrats! Your time is ${currentTime} seconds!\n\nWanna start a new game?`);
         //reload the page to prevent being stuck on the victory message
         location.reload()
     }
